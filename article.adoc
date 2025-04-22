@@ -1,6 +1,14 @@
 = Apache ActiveMQ Message Cursors
 
+
+image::./assets/images/AMQ-Cursors-HighLevel.png[alt=AMQ-Cursors-HighLevel,width=480,height=640,align="center"]
+
 == What are Message Cursors?
+
+image::./assets/images/AMQ-Cursors-HighLevelCursors.png[alt=AMQ-Cursors-HighLevelCursors,width=480,height=640,align="center"]
+
+image::./assets/images/AMQ-Cursors-GenericCursor.png[alt=AMQ-Cursors-GenericCursor,width=480,height=640,align="center"]
+
 
 === Types of Message Cursors
 
@@ -12,9 +20,20 @@ File-based cursors are used by default to handle non-persistent messages. They a
 
 ==== Store Cursor
 
+image::./assets/images/AMQ-Cursors-Fast-Store.png[alt=AMQ-Cursors-Fast-Store,width=480,height=640,align="center"]
+
+
+image::./assets/images/AMQ-Cursors-Slow-Store.png[alt=AMQ-Cursors-Slow-Store,width=480,height=640,align="center"]
+
+
 ==== VM Cursor
 
+image::./assets/images/AMQ-Cursors-VM.png[alt=AMQ-Cursors-VM,width=480,height=640,align="center"]
+
+
 ==== File Based Cursor
+
+image::./assets/images/AMQ-Cursors-FileBased.png[alt=AMQ-Cursors-FileBased,width=480,height=640,align="center"]
 
 
 == Conclusion
