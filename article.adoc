@@ -42,6 +42,62 @@ image::./assets/images/AMQ-Cursors-Slow-Store.png[alt=AMQ-Cursors-Slow-Store,wid
 
 In the slow consumer model inbound messages are sent into the message store, then from the store the messages enter a pending cursor. The destination dispatch queue pages messages from the pending cursor when it has space for its consumers.
 
+====== Configuration
+
+[cols="1,1"]
+|===
+| Element | Description
+| storeCursor
+| Default strategy for Topics
+| storeDurableSubscriberCursor
+| Durable Subscriber
+| storeCursor
+| Default strategy for Queues
+|===
+
+Topic Configuration: there is a dispatch queue and pending cursor for every subscriber. It’s possible to configure different policies for durable subscribers and transient subscribers
+[,xml,linenum]
+----
+<destinationPolicy>
+      <policyMap>
+        <policyEntries>
+          <policyEntry topic="org.apache.>" producerFlowControl="false" memoryLimit="1mb">
+            <dispatchPolicy>
+              <strictOrderDispatchPolicy />
+            </dispatchPolicy>
+            <deadLetterStrategy>
+              <individualDeadLetterStrategy  topicPrefix="Test.DLQ." />
+            </deadLetterStrategy>
+            <pendingSubscriberPolicy>
+            	<storeCursor />
+            </pendingSubscriberPolicy>
+            <pendingDurableSubscriberPolicy>
+                <storeDurableSubscriberCursor/>
+            </pendingDurableSubscriberPolicy>
+          </policyEntry>
+        </policyEntries>
+      </policyMap>
+----
+
+Queue Configuration: there is a single dispatch Queue and pending Queue for every destination
+[,xml,linenum]
+----
+<destinationPolicy>
+      <policyMap>
+        <policyEntries>
+          <policyEntry queue="org.apache.>">
+            <deadLetterStrategy>
+              <individualDeadLetterStrategy queuePrefix="Test.DLQ."/>
+            </deadLetterStrategy>
+            <pendingQueuePolicy>
+            	<storeCursor />
+            </pendingQueuePolicy>
+          </policyEntry>
+        </policyEntries>
+      </policyMap>
+ </destinationPolicy>
+----
+
 ==== VM Cursor
 
 The VM strategy attempts to populate message references in a pending cursor (cache), allowing the dispatch queue to page in awaiting messages as fast as its consumers can handle.
@@ -50,6 +106,23 @@ image::./assets/images/AMQ-Cursors-VM.png[alt=AMQ-Cursors-VM,width=480,height=64
 
 This strategy should only be applied when consumers are consistently fast. When consumers become slow or inactive for long periods of time the broker may experience memory constraints.
 
+===== Configuration
+
+[cols="1,1"]
+|===
+| Element | Description
+| vmCursor
+| pendingSubscriberPolicy for Topics
+| vmDurableCursor
+|
+| vmQueueCursor
+|
+|===
+
+[,xml,linenum]
+----
+----
+
 ==== File Based Cursor
 
 The file based strategy employs temporary files as a paging space for quick access to messages - this allows the pending cursor to grow to a limit. This approach is taken instead of falling back to a slow message store. If the message store is fast however, then this strategy should be avoided.
@@ -57,6 +130,23 @@ The file based strategy employs temporary files as a paging space for quick acce
 image::./assets/images/AMQ-Cursors-FileBased.png[alt=AMQ-Cursors-FileBased,width=480,height=640,align="center"]
 
 We note that the temporary files of the file based cursor are used by default for non-persistent messages.
+
+===== Configuration
+
+[cols="1,1"]
+|===
+| Element | Description
+| fileCursor
+| pendingSubscriberPolicy for Topics
+| fileDurableSubscriberCursor
+|
+| fileQueueCursor
+|
+|===
+
+[,xml,linenum]
+----
+----
 
 == Conclusion
 
