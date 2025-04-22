@@ -75,12 +75,12 @@ it has space for its consumers.
 
 ##### Configuration
 
-|                              |                             |
-|------------------------------|-----------------------------|
-| Element                      | Description                 |
-| storeCursor                  | Default strategy for Topics |
-| storeDurableSubscriberCursor | Durable Subscriber          |
-| storeCursor                  | Default strategy for Queues |
+|                              |                                           |
+|------------------------------|-------------------------------------------|
+| Element                      | Description                               |
+| storeCursor                  | Default strategy for Topics               |
+| storeDurableSubscriberCursor | pendingDurableSubscriberPolicy for Topics |
+| storeCursor                  | Default strategy for Queues               |
 
 Topic Configuration: there is a dispatch queue and pending cursor for
 every subscriber. It’s possible to configure different policies for
@@ -144,14 +144,57 @@ the broker may experience memory constraints.
 
 #### Configuration
 
-|                 |                                    |
-|-----------------|------------------------------------|
-| Element         | Description                        |
-| vmCursor        | pendingSubscriberPolicy for Topics |
-| vmDurableCursor |                                    |
-| vmQueueCursor   |                                    |
+|                 |                                           |
+|-----------------|-------------------------------------------|
+| Element         | Description                               |
+| vmCursor        | pendingSubscriberPolicy for Topics        |
+| vmDurableCursor | pendingDurableSubscriberPolicy for Topics |
+| vmQueueCursor   | pendingQueuePolicy for Queues             |
+
+Topic Configuration: there is a dispatch queue and pending cursor for
+every subscriber. It’s possible to configure different policies for
+durable subscribers and transient subscribers
 
 ``` xml
+<destinationPolicy>
+      <policyMap>
+        <policyEntries>
+          <policyEntry topic="org.apache.>" producerFlowControl="false" memoryLimit="1mb">
+            <dispatchPolicy>
+              <strictOrderDispatchPolicy />
+            </dispatchPolicy>
+            <deadLetterStrategy>
+              <individualDeadLetterStrategy  topicPrefix="Test.DLQ." />
+            </deadLetterStrategy>
+            <pendingSubscriberPolicy>
+                <vmCursor/>
+            </pendingSubscriberPolicy>
+            <pendingDurableSubscriberPolicy>
+                <vmDurableCursor/>
+            </pendingDurableSubscriberPolicy>
+          </policyEntry>
+        </policyEntries>
+      </policyMap>
+```
+
+Queue Configuration: there is a single dispatch Queue and pending Queue
+for every destination
+
+``` xml
+<destinationPolicy>
+      <policyMap>
+        <policyEntries>
+          <policyEntry queue="org.apache.>">
+            <deadLetterStrategy>
+              <individualDeadLetterStrategy queuePrefix="Test.DLQ."/>
+            </deadLetterStrategy>
+            <pendingQueuePolicy>
+                <vmQueueCursor/>
+            </pendingQueuePolicy>
+          </policyEntry>
+        </policyEntries>
+      </policyMap>
+ </destinationPolicy>
 ```
 
 ### File Based Cursor
@@ -172,14 +215,57 @@ default for non-persistent messages.
 
 #### Configuration
 
-|                             |                                    |
-|-----------------------------|------------------------------------|
-| Element                     | Description                        |
-| fileCursor                  | pendingSubscriberPolicy for Topics |
-| fileDurableSubscriberCursor |                                    |
-| fileQueueCursor             |                                    |
+|                             |                                           |
+|-----------------------------|-------------------------------------------|
+| Element                     | Description                               |
+| fileCursor                  | pendingSubscriberPolicy for Topics        |
+| fileDurableSubscriberCursor | pendingDurableSubscriberPolicy for Topics |
+| fileQueueCursor             | pendingQueuePolicy for queues             |
+
+Topic Configuration: there is a dispatch queue and pending cursor for
+every subscriber. It’s possible to configure different policies for
+durable subscribers and transient subscribers
 
 ``` xml
+<destinationPolicy>
+      <policyMap>
+        <policyEntries>
+          <policyEntry topic="org.apache.>" producerFlowControl="false" memoryLimit="1mb">
+            <dispatchPolicy>
+              <strictOrderDispatchPolicy />
+            </dispatchPolicy>
+            <deadLetterStrategy>
+              <individualDeadLetterStrategy  topicPrefix="Test.DLQ." />
+            </deadLetterStrategy>
+            <pendingSubscriberPolicy>
+                <fileCursor/>
+            </pendingSubscriberPolicy>
+            <pendingDurableSubscriberPolicy>
+                <fileDurableSubscriberCursor/>
+            </pendingDurableSubscriberPolicy>
+          </policyEntry>
+        </policyEntries>
+      </policyMap>
+```
+
+Queue Configuration: there is a single dispatch Queue and pending Queue
+for every destination
+
+``` xml
+<destinationPolicy>
+      <policyMap>
+        <policyEntries>
+          <policyEntry queue="org.apache.>">
+            <deadLetterStrategy>
+              <individualDeadLetterStrategy queuePrefix="Test.DLQ."/>
+            </deadLetterStrategy>
+            <pendingQueuePolicy>
+                <fileQueueCursor/>
+            </pendingQueuePolicy>
+          </policyEntry>
+        </policyEntries>
+      </policyMap>
+ </destinationPolicy>
 ```
 
 # Conclusion

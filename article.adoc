@@ -50,7 +50,7 @@ In the slow consumer model inbound messages are sent into the message store, the
 | storeCursor
 | Default strategy for Topics
 | storeDurableSubscriberCursor
-| Durable Subscriber
+| pendingDurableSubscriberPolicy for Topics
 | storeCursor
 | Default strategy for Queues
 |===
@@ -114,13 +114,52 @@ This strategy should only be applied when consumers are consistently fast. When 
 | vmCursor
 | pendingSubscriberPolicy for Topics
 | vmDurableCursor
-|
+| pendingDurableSubscriberPolicy for Topics
 | vmQueueCursor
-|
+| pendingQueuePolicy for Queues
 |===
 
+Topic Configuration: there is a dispatch queue and pending cursor for every subscriber. It’s possible to configure different policies for durable subscribers and transient subscribers
 [,xml,linenum]
 ----
+<destinationPolicy>
+      <policyMap>
+        <policyEntries>
+          <policyEntry topic="org.apache.>" producerFlowControl="false" memoryLimit="1mb">
+            <dispatchPolicy>
+              <strictOrderDispatchPolicy />
+            </dispatchPolicy>
+            <deadLetterStrategy>
+              <individualDeadLetterStrategy  topicPrefix="Test.DLQ." />
+            </deadLetterStrategy>
+            <pendingSubscriberPolicy>
+            	<vmCursor/>
+            </pendingSubscriberPolicy>
+            <pendingDurableSubscriberPolicy>
+                <vmDurableCursor/>
+            </pendingDurableSubscriberPolicy>
+          </policyEntry>
+        </policyEntries>
+      </policyMap>
+----
+
+Queue Configuration: there is a single dispatch Queue and pending Queue for every destination
+[,xml,linenum]
+----
+<destinationPolicy>
+      <policyMap>
+        <policyEntries>
+          <policyEntry queue="org.apache.>">
+            <deadLetterStrategy>
+              <individualDeadLetterStrategy queuePrefix="Test.DLQ."/>
+            </deadLetterStrategy>
+            <pendingQueuePolicy>
+            	<vmQueueCursor/>
+            </pendingQueuePolicy>
+          </policyEntry>
+        </policyEntries>
+      </policyMap>
+ </destinationPolicy>
 ----
 
 ==== File Based Cursor
@@ -139,13 +178,52 @@ We note that the temporary files of the file based cursor are used by default fo
 | fileCursor
 | pendingSubscriberPolicy for Topics
 | fileDurableSubscriberCursor
-|
+| pendingDurableSubscriberPolicy for Topics
 | fileQueueCursor
-|
+| pendingQueuePolicy for queues
 |===
 
+Topic Configuration: there is a dispatch queue and pending cursor for every subscriber. It’s possible to configure different policies for durable subscribers and transient subscribers
 [,xml,linenum]
 ----
+<destinationPolicy>
+      <policyMap>
+        <policyEntries>
+          <policyEntry topic="org.apache.>" producerFlowControl="false" memoryLimit="1mb">
+            <dispatchPolicy>
+              <strictOrderDispatchPolicy />
+            </dispatchPolicy>
+            <deadLetterStrategy>
+              <individualDeadLetterStrategy  topicPrefix="Test.DLQ." />
+            </deadLetterStrategy>
+            <pendingSubscriberPolicy>
+            	<fileCursor/>
+            </pendingSubscriberPolicy>
+            <pendingDurableSubscriberPolicy>
+                <fileDurableSubscriberCursor/>
+            </pendingDurableSubscriberPolicy>
+          </policyEntry>
+        </policyEntries>
+      </policyMap>
+----
+
+Queue Configuration: there is a single dispatch Queue and pending Queue for every destination
+[,xml,linenum]
+----
+<destinationPolicy>
+      <policyMap>
+        <policyEntries>
+          <policyEntry queue="org.apache.>">
+            <deadLetterStrategy>
+              <individualDeadLetterStrategy queuePrefix="Test.DLQ."/>
+            </deadLetterStrategy>
+            <pendingQueuePolicy>
+            	<fileQueueCursor/>
+            </pendingQueuePolicy>
+          </policyEntry>
+        </policyEntries>
+      </policyMap>
+ </destinationPolicy>
 ----
 
 == Conclusion
