@@ -99,9 +99,11 @@ durable subscribers and transient subscribers
             <deadLetterStrategy>
               <individualDeadLetterStrategy  topicPrefix="Test.DLQ." />
             </deadLetterStrategy>
+            <!-- This is default, no need to configure.
             <pendingSubscriberPolicy>
                 <storeCursor />
             </pendingSubscriberPolicy>
+            -->
             <pendingDurableSubscriberPolicy>
                 <storeDurableSubscriberCursor/>
             </pendingDurableSubscriberPolicy>
